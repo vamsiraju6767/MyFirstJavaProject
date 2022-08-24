@@ -28,10 +28,8 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     - run: mvn --batch-mode --update-snapshots verify
-    - run: ls *
-    - run: mkdir staging && cp *.war staging
     - uses: actions/upload-artifact@v3
       with:
         name: Package
-        path: staging
+        path: .
 
