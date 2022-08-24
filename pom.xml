@@ -33,6 +33,7 @@
 		</dependency>
 
 		<!-- Spring security -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -57,6 +58,7 @@
 		</dependency>
 
 		<!-- spring-test, hamcrest, ... -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -135,4 +137,5 @@
 			</plugin>
 		</plugins>
 	</build>
+
 </project>
