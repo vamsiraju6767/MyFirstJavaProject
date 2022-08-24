@@ -8,7 +8,6 @@
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
@@ -19,7 +18,6 @@
 # ----------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------
-# Maven2 Start Up Batch script
 #
 # Required ENV vars:
 # ------------------
@@ -114,7 +112,6 @@ if $mingw ; then
     M2_HOME="`(cd "$M2_HOME"; pwd)`"
   [ -n "$JAVA_HOME" ] &&
     JAVA_HOME="`(cd "$JAVA_HOME"; pwd)`"
-  # TODO classpath?
 fi
 
 if [ -z "$JAVA_HOME" ]; then
@@ -212,7 +209,6 @@ else
     if [ "$MVNW_VERBOSE" = true ]; then
       echo "Couldn't find .mvn/wrapper/maven-wrapper.jar, downloading it ..."
     fi
-    jarUrl="https://repo.maven.apache.org/maven2/io/takari/maven-wrapper/0.4.2/maven-wrapper-0.4.2.jar"
     while IFS="=" read key value; do
       case "$key" in (wrapperUrl) jarUrl="$value"; break ;;
       esac
@@ -220,18 +216,15 @@ else
     if [ "$MVNW_VERBOSE" = true ]; then
       echo "Downloading from: $jarUrl"
     fi
-    wrapperJarPath="$BASE_DIR/.mvn/wrapper/maven-wrapper.jar"
-
+    wrapperJarPath="$BASE_DIR/.mvn/wrapper/maven-wrapper.jar
     if command -v wget > /dev/null; then
         if [ "$MVNW_VERBOSE" = true ]; then
           echo "Found wget ... using wget"
         fi
-        wget "$jarUrl" -O "$wrapperJarPath"
     elif command -v curl > /dev/null; then
         if [ "$MVNW_VERBOSE" = true ]; then
           echo "Found curl ... using curl"
         fi
-        curl -o "$wrapperJarPath" "$jarUrl"
     else
         if [ "$MVNW_VERBOSE" = true ]; then
           echo "Falling back to using Java to download"
@@ -276,6 +269,7 @@ if $cygwin; then
   [ -n "$MAVEN_PROJECTBASEDIR" ] &&
     MAVEN_PROJECTBASEDIR=`cygpath --path --windows "$MAVEN_PROJECTBASEDIR"`
 fi
+
 
 WRAPPER_LAUNCHER=org.apache.maven.wrapper.MavenWrapperMain
 
