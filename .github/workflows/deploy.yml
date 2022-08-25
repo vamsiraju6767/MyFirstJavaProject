@@ -20,15 +20,16 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
-
-        java-version: '11'
-        distribution: 'adopt'
-    - run: mvn --batch-mode --update-snapshots verify
-    - uses: actions/upload-artifact@v3
-      with:
-        name: Package
-        path: .
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      - run: mvn --batch-mode --update-snapshots verify
+      - run: mkdir staging && cp target/*.jar staging
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: staging
 
 
