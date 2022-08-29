@@ -1,62 +1,170 @@
-[![Build Status](https://travis-ci.com/givanthak/spring-boot-rest-api-tutorial.svg?branch=master)](https://travis-ci.com/givanthak/spring-boot-rest-api-tutorial)
-[![Known Vulnerabilities](https://snyk.io/test/github/givanthak/spring-boot-rest-api-tutorial/badge.svg)](https://snyk.io/test/github/givanthak/spring-boot-rest-api-tutorial)
+[![HitCount](http://hits.dwyl.io/phantasmicmeans/spring-boot-restful-api-example.svg)](http://hits.dwyl.io/phantasmicmeans/spring-boot-restful-api-example)
+
+# Spring Boot RESTful API - JPA Hibernate MySQL Example #
+*by S.M.Lee(phantasmicmeans)*
+
+RESTful API using Spring Boot, Swagger2, JPA hibernate and Mysql, One to Many, Many to One bidirectional mapping
+
+&nbsp;
+
+## Relation ## 
+
+![image](https://user-images.githubusercontent.com/28649770/44622337-69c67a80-a8f1-11e8-99d7-34adb90779a3.png)
 
 
+### Bidirectional Mapping ### 
 
+* Project - Problem (One-To-Many)
+* Problem - Project (Many-To-One)
 
+* Problem - SubProblem (One-To-Many)
+* SubProblem - Problem (Many-To-One)
 
+&nbsp;
 
-# Sample REST CRUD API with Spring Boot, Mysql, JPA and Hibernate 
+## Before we go, Check the domain class ## 
 
-## Steps to Setup
+   **1. Problem.java(part of)**
 
-**1. Clone the application**
-
-```bash
-https://github.com/givanthak/spring-boot-rest-api-tutorial.git
+```java
+@OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+private Set <Problem> problems = new HashSet<>();
+/* Project <-> Problem One to Many bidirectional */
 ```
 
-**2. Create Mysql database**
-```bash
-create database user_database
+**2. Problem.java(part of)**
+
+```java
+@ManyToOne(cascade = CascadeType.REMOVE)
+@JoinColumn(name = "code", referencedColumnName = "code", nullable = false)
+private Project project; 
+/* Problem <-> Project  Many to One bidirectional */
+
+@OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+private Set<subProblem> subProblems = new HashSet<>();
+//Problem <-> SubProblem  One to Many bidirectional
 ```
 
-**3. Change mysql username and password as per your installation**
+**3. SubProblem.java(part of)**
 
-+ open `src/main/resources/application.properties`
-
-+ change `spring.datasource.username` and `spring.datasource.password` as per your mysql installation
-
-**4. Build and run the app using maven**
-
-```bash
-mvn package
-java -jar target/spring-boot-rest-api-tutorial-0.0.1-SNAPSHOT.jar
-
+```java
+@ManyToOne(cascade = CascadeType.REMOVE)
+@JoinColumn(name = "pro_idx", referencedColumnName = "idx", nullable = false)
+private Problem problem; 
+/* Problem <-> Project Many to One bidirectional */
 ```
 
-Alternatively, you can run the app without packaging it using -
+&nbsp;
 
+
+## RESTful API Server ##
+
+&nbsp;
+**1. API Description for Project**
+
+METHOD | PATH | DESCRIPTION 
+------------|-----|------------
+GET | /api/project/{code} | get Project-Problem-SubProblem with code
+POST | /api/project | save Project (code will generate by constructor) 
+DELETE | /api/project/{code} | delete Project with code
+PUT | /api/project/{code} | update Project with code
+
+&nbsp;
+**2. API Description for Problem & SubProblem**
+
+METHOD | PATH | DESCRIPTION 
+------------|-----|------------
+GET | /api/problem/{code} | get all Problem-Subproblem with code
+POST | /api/problem/{code} | save Problem with code
+DELETE | /api/problem/{code}/all | delete all Problem-Subproblem with code
+POST | /api/subproblem | save Subproblem
+
+&nbsp;
+
+## Curl ## 
+
+&nbsp;
+**1. Curl for Project**
+
+1. Get a Project with code
 ```bash
-mvn spring-boot:run
+curl -X GET http://localhost:8080/problem/0gn547 
 ```
 
-The app will start running at <http://localhost:8080>.
+2. Save a Project with code 
+```bash
+curl -d '{"title":"first project"}' -H "Content-Type: application/json" -X POST http://localhost:8080/project
+```
 
-## Explore Rest APIs
+3. Delete a Project with code
+```bash
+curl -X DELETE http://localhost:8001/project/0gn547
+```
 
-The app defines following CRUD APIs.
+4. Update a Project with code 
+```bash
+curl -X PUT -H "Content-Type: application/json; charset=utf-8" -d '{"title":"first-project-renewal"}' http://localhost:8080/project/hx6029
+```
+&nbsp;
 
-    GET /api/v1/users
-    
-    POST /api/v1/users
-    
-    GET /api/v1/users/{userId}
-    
-    PUT /api/v1/users/{userId}
-    
-    DELETE /api/v1/users/{userId}
+**2. Curl for Problem & SubProblem**
+&nbsp;
 
-You can find the tutorial for this application on my blog -
+1. Get a Problem with code
+```bash
+curl -X GET http://localhost:8001/problem/0gn547 
+```
 
-<https://www.prathapgivantha.wordpress.com>
+2. Save a Problem with code
+```bash
+curl -d '{"title":"first problem"}' -H "Content-Type: application/json" -X POST http://localhost:8080/problem/hx6029
+```
+
+3. Delete a Problem-SubProblem with code
+```bash
+curl -X DELETE http://localhost:8001/problem/hx6029/all 
+``` 
+4. Save a SubProblem 
+```bash
+curl -d '{"content":"first-subproblem","pro_idx":1}' -H "Content-Type: application/json" -X POST http://localhost:8080/subproblem
+```
+&nbsp;
+
+## Running the project with MySQL ##
+
+append this at the end of application.yml
+&nbsp;
+
+```yml
+spring:
+    application:
+      name: project-api
+       
+## Hibernate Properties
+# The SQL dialect makes Hibernate generate better SQL for the chosen database
+    jpa: 
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+      hibernate:
+        ddl-auto: update
+        # Hibernate ddl auto (create, create-drop, validate, update)
+      
+    datasource:
+      url: jdbc:mysql://{YOUR_MSQL_SERVER}:3306/{DATABASE NAME}?useSSL=false
+      username: {YOUR_MYSQL_ID}
+      password: {YOUR_MYSQL{PASSWORD}
+      driver-class-name: com.mysql.jdbc.Driver
+      hikari:
+        maximum-pool-size: 2
+```
+
+&nbsp;
+
+
+## Swagger ## 
+
+You can use the Swagger API Documentation at http://{Your_Server}:{Port}/swagger-ui.html
+
+![image](https://user-images.githubusercontent.com/28649770/44622453-8bc0fc80-a8f3-11e8-9223-b5a21717ba6d.png)
+
